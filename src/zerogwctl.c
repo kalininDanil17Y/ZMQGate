@@ -122,8 +122,6 @@ int main(int argc, char **argv) {
     }
     while(TRUE) {
         zmq_msg_t msg;
-        long opt;
-        size_t size = sizeof(opt);
         zmq_msg_init(&msg);
         rc = zmq_msg_recv(&msg, socket, 0);
         if(rc < 0) {
@@ -132,16 +130,19 @@ int main(int argc, char **argv) {
             rc = 1;
             goto end;
         }
-        rc = zmq_getsockopt(socket, ZMQ_RCVMORE, &opt, &size);
-        if(rc != 0 || size != sizeof(opt)) {
-            fprintf(stderr, "zerogwctl: failed to read reply flag\n");
+        int64_t more = 0;
+        size_t more_size = sizeof(more);
+        rc = zmq_getsockopt(socket, ZMQ_RCVMORE, &more, &more_size);
+        if(rc != 0) {
+            fprintf(stderr, "zerogwctl: failed to read reply flag: %s\n",
+                strerror(errno));
             zmq_msg_close(&msg);
             rc = 1;
             goto end;
         }
         printf("%.*s\n", (int)zmq_msg_size(&msg), (char *)zmq_msg_data(&msg));
         zmq_msg_close(&msg);
-        if(!opt) break;
+        if(!more) break;
     }
 end:
     zmq_close(socket);
