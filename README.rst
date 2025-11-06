@@ -66,6 +66,20 @@ First two usually compiled statically, so you don't need them at runtime. Same
 with python. (Eventually, I'll release a bundle with precompiled configuration
 parser and embedded few other libraries for easier compiling :) )
 
+Suggested packages
+~~~~~~~~~~~~~~~~~~
+
+On Debian/Ubuntu the following packages satisfy the build- and run-time
+requirements::
+
+    sudo apt-get install \
+        build-essential pkg-config python3 \
+        libzmq3-dev libyaml-dev libev-dev libssl-dev
+
+To run the binaries you only need::
+
+    sudo apt-get install libzmq5 libyaml-0-2 libev4 libssl3
+
 .. _libwebsite: http://github.com/tailhook/libwebsite
 .. _coyaml: http://github.com/tailhook/coyaml
 .. _python3: http://python.org/
