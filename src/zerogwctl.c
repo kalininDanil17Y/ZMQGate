@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "config.h"
 
@@ -73,7 +74,7 @@ int main(int argc, char **argv) {
     assert(coyaml_readfile(ctx) == 0);
     coyaml_context_free(ctx);
 
-    void *zmq = zmq_init(1);
+    void *zmq = zmq_ctx_new();
     assert(zmq);
     void *socket = zmq_socket(zmq, ZMQ_REQ);
     if(flags.socket) {
@@ -95,7 +96,7 @@ int main(int argc, char **argv) {
         zmq_msg_t msg;
         rc = zmq_msg_init_data(&msg, argv[i], strlen(argv[i]), NULL, NULL);
         assert(rc == 0);
-        rc = zmq_send(socket, &msg, (i == argc-1 ? 0: ZMQ_SNDMORE));
+        rc = zmq_msg_send(&msg, socket, (i == argc-1 ? 0: ZMQ_SNDMORE));
         assert(rc == 0);
     }
     while(TRUE) {
@@ -103,7 +104,7 @@ int main(int argc, char **argv) {
         long opt;
         size_t size = sizeof(opt);
         zmq_msg_init(&msg);
-        int rc = zmq_recv(socket, &msg, 0);
+        int rc = zmq_msg_recv(&msg, socket, 0);
         assert(rc == 0);
         rc = zmq_getsockopt(socket, ZMQ_RCVMORE, &opt, &size);
         assert(size == 8);
@@ -114,6 +115,6 @@ int main(int argc, char **argv) {
         if(!opt) break;
     }
     zmq_close(socket);
-    zmq_term(zmq);
+    zmq_ctx_term(zmq);
     config_free(&config);
 }

@@ -27,7 +27,7 @@ typedef enum {
     zmq_msg_init(&name);
 
 #define Z_RECV_START(name, break_stmt) \
-    if(zmq_recv((name##_sock), (&name), ZMQ_NOBLOCK) < 0) { \
+    if(zmq_msg_recv(&(name), (name##_sock), ZMQ_DONTWAIT) < 0) { \
         if(errno == EINTR) goto name##_finish; \
         else if(errno == EAGAIN) { \
             SNIMPL(zmq_msg_close(&name)); \
@@ -38,7 +38,7 @@ typedef enum {
     if(!name##_opt) goto name##_error;
 
 #define Z_RECV_BLOCK(name) \
-    if(zmq_recv((name##_sock), (&name), ZMQ_NOBLOCK) < 0) { \
+    if(zmq_msg_recv(&(name), (name##_sock), ZMQ_DONTWAIT) < 0) { \
         if(errno == EINTR || errno == EAGAIN) goto name##_finish; \
         else SNIMPL(-1); \
     } \
@@ -46,7 +46,7 @@ typedef enum {
     if(!name##_opt) goto name##_error;
 
 #define Z_RECV(name) \
-    SNIMPL(zmq_recv((name##_sock), (&name), ZMQ_NOBLOCK)); \
+    SNIMPL(zmq_msg_recv(&(name), (name##_sock), ZMQ_DONTWAIT)); \
     SNIMPL(zmq_getsockopt((name##_sock), ZMQ_RCVMORE, &name##_opt, &name##_len));
 
 #define Z_RECV_NEXT(name) \

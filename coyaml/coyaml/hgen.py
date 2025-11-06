@@ -54,7 +54,8 @@ class GenHCode(object):
             ms(Var('coyaml_head_t', 'head'))
             self._struct_body(ms, self.cfg.data, root=ast)
         ast(VSpace())
-        ast(Var(Typename('coyaml_cmdline_t'), self.prefix+'_cmdline'))
+        ast(Var(Typename('coyaml_cmdline_t'), self.prefix+'_cmdline',
+            storage='extern'))
         ast(Func(Typename(self.prefix+'_main_t *'), self.prefix+'_init', [
             Param(Typename(self.prefix+'_main_t *'), 'target'),
             ]))

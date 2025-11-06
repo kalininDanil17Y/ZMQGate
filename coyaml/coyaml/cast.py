@@ -259,12 +259,17 @@ class Var(Node):
         ('name', Ident),
         ('array', tuple),
         ('static', bool),
+        ('storage', (str, type(None))),
         ])
     top = True
-    line_format = '{static }{type} {name}{array};'
+    line_format = '{storage}{static }{type} {name}{array};'
 
     def fmt_static(self):
         return 'static' if getattr(self, 'static', None) else ''
+
+    def fmt_storage(self):
+        storage = getattr(self, 'storage', None)
+        return storage + ' ' if storage else ''
 
     def fmt_array(self):
         return ''.join('[]' if a is None else '[{0:d}]'.format(a)
@@ -339,9 +344,10 @@ class VarAssign(Var):
         ('expr', (Expression, Arr)),
         ('array', tuple),
         ('static', bool),
+        ('storage', (str, type(None))),
         ])
     top = True
-    line_format = '{static }{type} {name}{array} = {expr};'
+    line_format = '{storage}{static }{type} {name}{array} = {expr};'
 
 class Return(Var):
     __slots__ = OrderedDict([
