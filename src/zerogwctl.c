@@ -109,7 +109,8 @@ int main(int argc, char **argv) {
             rc = 1;
             goto end;
         }
-        rc = zmq_msg_send(&msg, socket, (i == optind && i == argc-1 ? 0: ZMQ_SNDMORE));
+        int flags = (i == argc - 1) ? 0 : ZMQ_SNDMORE;
+        rc = zmq_msg_send(&msg, socket, flags);
         if(rc < 0) {
             fprintf(stderr, "zerogwctl: failed to send command to zerogw: %s\n",
                 strerror(errno));
@@ -117,6 +118,7 @@ int main(int argc, char **argv) {
             rc = 1;
             goto end;
         }
+        zmq_msg_close(&msg);
     }
     while(TRUE) {
         zmq_msg_t msg;
