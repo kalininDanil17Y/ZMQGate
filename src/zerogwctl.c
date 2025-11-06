@@ -67,11 +67,19 @@ int main(int argc, char **argv) {
 
     parse_arguments(&flags, argc, argv);
     coyaml_context_t *ctx = config_context(NULL, &config);
+    if(!ctx) {
+        fprintf(stderr, "zerogwctl: failed to initialise configuration context\n");
+        return 1;
+    }
     if(flags.config) {
         ctx->root_filename = flags.config;
     }
-    assert(ctx);
-    assert(coyaml_readfile(ctx) == 0);
+    if(coyaml_readfile(ctx) != 0) {
+        fprintf(stderr,
+            "zerogwctl: cannot read configuration (check --config and permissions)\n");
+        coyaml_context_free(ctx);
+        return 1;
+    }
     coyaml_context_free(ctx);
 
     void *zmq = zmq_ctx_new();
@@ -95,26 +103,47 @@ int main(int argc, char **argv) {
     for(int i = optind; i < argc; ++i) {
         zmq_msg_t msg;
         rc = zmq_msg_init_data(&msg, argv[i], strlen(argv[i]), NULL, NULL);
-        assert(rc == 0);
-        rc = zmq_msg_send(&msg, socket, (i == argc-1 ? 0: ZMQ_SNDMORE));
-        assert(rc == 0);
+        if(rc != 0) {
+            fprintf(stderr, "zerogwctl: failed to send command part\n");
+            zmq_msg_close(&msg);
+            rc = 1;
+            goto end;
+        }
+        rc = zmq_msg_send(&msg, socket, (i == optind && i == argc-1 ? 0: ZMQ_SNDMORE));
+        if(rc < 0) {
+            fprintf(stderr, "zerogwctl: failed to send command to zerogw: %s\n",
+                strerror(errno));
+            zmq_msg_close(&msg);
+            rc = 1;
+            goto end;
+        }
     }
     while(TRUE) {
         zmq_msg_t msg;
         long opt;
         size_t size = sizeof(opt);
         zmq_msg_init(&msg);
-        int rc = zmq_msg_recv(&msg, socket, 0);
-        assert(rc == 0);
+        rc = zmq_msg_recv(&msg, socket, 0);
+        if(rc < 0) {
+            fprintf(stderr, "zerogwctl: receive failed: %s\n", strerror(errno));
+            zmq_msg_close(&msg);
+            rc = 1;
+            goto end;
+        }
         rc = zmq_getsockopt(socket, ZMQ_RCVMORE, &opt, &size);
-        assert(size == 8);
-        assert(rc == 0);
+        if(rc != 0 || size != sizeof(opt)) {
+            fprintf(stderr, "zerogwctl: failed to read reply flag\n");
+            zmq_msg_close(&msg);
+            rc = 1;
+            goto end;
+        }
         printf("%.*s\n", (int)zmq_msg_size(&msg), (char *)zmq_msg_data(&msg));
-        rc = zmq_msg_close(&msg);
-        assert(rc == 0);
+        zmq_msg_close(&msg);
         if(!opt) break;
     }
+end:
     zmq_close(socket);
     zmq_ctx_term(zmq);
     config_free(&config);
+    return rc;
 }
