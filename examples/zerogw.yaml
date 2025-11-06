@@ -16,6 +16,7 @@ Server:
   error-log:
     level: 5
     warning-timeout: 300
+    filename: "-"
   mime-types:
     extra:
       yaml: text/x-yaml

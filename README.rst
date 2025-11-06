@@ -80,6 +80,13 @@ To run the binaries you only need::
 
     sudo apt-get install libzmq5 libyaml-0-2 libev4 libssl3
 
+Logging
+~~~~~~~
+
+When running inside Docker it is convenient to stream Zerogw logs to
+`stdout`.  Set ``Server.error-log.filename`` to ``"-"`` (the default in
+``examples/zerogw.yaml``) and messages will appear in ``docker logs``.
+
 .. _libwebsite: http://github.com/tailhook/libwebsite
 .. _coyaml: http://github.com/tailhook/coyaml
 .. _python3: http://python.org/

@@ -31,8 +31,11 @@ RUN apt-get update && \
         libzmq5 \
         libyaml-0-2 \
         libev4 \
-        libssl3 && \
+        libssl3 \
+        mime-support && \
     rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /var/log && touch /var/log/zerogw.log
 
 COPY --from=builder /tmp/pkg/usr /usr
 

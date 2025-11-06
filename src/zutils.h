@@ -40,13 +40,16 @@ typedef enum {
 #define Z_RECV_BLOCK(name) \
     if(zmq_msg_recv(&(name), (name##_sock), ZMQ_DONTWAIT) < 0) { \
         if(errno == EINTR || errno == EAGAIN) goto name##_finish; \
-        else SNIMPL(-1); \
+        SNIMPL(-1); \
     } \
     SNIMPL(zmq_getsockopt((name##_sock), ZMQ_RCVMORE, &name##_opt, &name##_len)); \
     if(!name##_opt) goto name##_error;
 
 #define Z_RECV(name) \
-    SNIMPL(zmq_msg_recv(&(name), (name##_sock), ZMQ_DONTWAIT)); \
+    if(zmq_msg_recv(&(name), (name##_sock), ZMQ_DONTWAIT) < 0) { \
+        if(errno == EINTR || errno == EAGAIN) goto name##_finish; \
+        SNIMPL(-1); \
+    } \
     SNIMPL(zmq_getsockopt((name##_sock), ZMQ_RCVMORE, &name##_opt, &name##_len));
 
 #define Z_RECV_NEXT(name) \

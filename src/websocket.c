@@ -70,16 +70,25 @@ void websock_free_message(void *data, void *hint) {
     ws_MESSAGE_DECREF(&msg->ws);
 }
 
+static int send_part(config_zmqsocket_t *sock, zmq_msg_t *msg, int flags) {
+    if(zmq_msg_send(msg, sock->_sock, flags) < 0) {
+        if(errno == EAGAIN || errno == EINTR) {
+            zmq_msg_close(msg);
+            return -1;
+        }
+        zmq_msg_close(msg);
+        SNIMPL(-1);
+        return -1;
+    }
+    return 0;
+}
+
 int backend_send_real(config_zmqsocket_t *sock, hybi_t *hybi, void *msg) {
     zmq_msg_t zmsg;
     SNIMPL(zmq_msg_init_size(&zmsg, UID_LEN));
     memcpy(zmq_msg_data(&zmsg), hybi->uid, UID_LEN);
-    if(zmq_msg_send(&zmsg, sock->_sock, ZMQ_SNDMORE|ZMQ_DONTWAIT) < 0) {
-        if(errno == EAGAIN || errno == EINTR) {
-            zmq_msg_close(&zmsg);
-            return -1;
-        }
-        SNIMPL(-1);
+    if(send_part(sock, &zmsg, ZMQ_SNDMORE|ZMQ_DONTWAIT) < 0) {
+        return -1;
     }
     int len;
     char *kind;
@@ -103,11 +112,15 @@ int backend_send_real(config_zmqsocket_t *sock, hybi_t *hybi, void *msg) {
     SNIMPL(zmq_msg_init_size(&zmsg, len));
     memcpy(zmq_msg_data(&zmsg), kind, len);
     int flag = (is_msg || hybi->flags & WS_HAS_COOKIE) ? ZMQ_SNDMORE : 0;
-    SNIMPL(zmq_msg_send(&zmsg, sock->_sock, ZMQ_DONTWAIT | flag));
+    if(send_part(sock, &zmsg, ZMQ_DONTWAIT | flag) < 0) {
+        return -1;
+    }
     if(hybi->flags & WS_HAS_COOKIE) {
         flag = is_msg ? ZMQ_SNDMORE : 0;
         SNIMPL(zmq_msg_copy(&zmsg, &hybi->cookie));
-        SNIMPL(zmq_msg_send(&zmsg, sock->_sock, ZMQ_DONTWAIT | flag));
+        if(send_part(sock, &zmsg, ZMQ_DONTWAIT | flag) < 0) {
+            return -1;
+        }
     }
     if(is_msg) {
         if(hybi->type == HYBI_COMET) {
@@ -119,7 +132,9 @@ int backend_send_real(config_zmqsocket_t *sock, hybi_t *hybi, void *msg) {
             SNIMPL(zmq_msg_init_data(&zmsg, wmsg->ws.data, wmsg->ws.length,
                 websock_free_message, wmsg));
         }
-        SNIMPL(zmq_msg_send(&zmsg, sock->_sock, ZMQ_DONTWAIT));
+        if(send_part(sock, &zmsg, ZMQ_DONTWAIT) < 0) {
+            return -1;
+        }
     }
     return 0;
 }
