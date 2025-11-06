@@ -1,0 +1,4 @@
+.waf*
+.lock-*
+/build
+/libwebsite*.tar.bz2
