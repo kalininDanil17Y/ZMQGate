@@ -16,7 +16,7 @@
 #include <endian.h>
 #include <fcntl.h>
 
-#include <openssl/sha.h>
+#include "sha1.h"
 
 #include "core.h"
 

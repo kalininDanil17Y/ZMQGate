@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <openssl/md5.h>
+#include "md5.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
