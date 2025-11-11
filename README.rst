@@ -1,23 +1,22 @@
-Zerogw
-======
+ZMQGate
+=======
 
-Zerogw is a http to zeromq gateway. Which means it listens HTTP, parses
-request and sends it using zeromq socket (ZMQ_REQ). Then waits for the reply
-and responds with data received from zeromq socket.
+ZMQGate is a fork of Zerogw (https://github.com/tailhook/zerogw) that
+continues the HTTP-to-ZeroMQ gateway functionality while hardening
+websocket handling and routing glue. It still listens for HTTP requests,
+parses them and forwards them over a ZeroMQ ZMQ_REQ socket, then waits for
+a reply and responds with the data received from ZeroMQ.
 
-Starting with v0.3 zerogw also supports WebSockets. Websockets are implemented
-by forwarding incoming messages using ZMQ_PUB socket, and listening commands
-from ZMQ_SUB socket. Each WebSocket client can be subscribed to unlimited
-number of topics. Each zeromq message it either control message (e.g.
-subscription) or message to a specified topic which will be efficiently sent
-to every WebSocket subscribed to that particular topic.
+Since Zerogw 0.3 websocket support has been available: incoming websocket
+messages are forwarded via a ZMQ_PUB socket, and commands are received from
+a ZMQ_SUB socket. Each websocket client can subscribe to many topics,
+receiving either control messages (such as subscription updates) or topic-
+specific payloads that are efficiently broadcast only to the clients that
+are subscribed.
 
-Zerogw is written in C  and uses libwebsite library for handling HTTP (which
-itself uses libev).
-
-Zerogw is not a full-blown http server. It knows nothing about static files,
-caches, CGI, whatever. It knows some routing and that's almost it. That makes
-it very fast and perfectly scalable.
+ZMQGate remains a lean daemon—it is not a general HTTP server (no static
+content, no caching or CGI), just routing logic so latency stays low and it
+scales well.
 
 Use it for:
  * RPC's
@@ -29,26 +28,15 @@ Use it for:
 Resources
 ---------
 
-* Home page: http://zerogw.com
-* Mailing list: http://groups.google.com/group/zerogw
-* Documentation: http://docs.zerogw.com
-* Online chat example: http://tabbedchat.zerogw.com
+* Documentation mirror: https://app.readthedocs.org/projects/zerogw/
 
 
 Installing
 ----------
 
-Ubuntu::
-
-    sudo add-apt-repository ppa:tailhook/zerogw
-    sudo apt-get update
-    sudo apt-get install zerogw
-
-ArchLinux::
-
-    yaourt -S zerogw
-
-For other distributions refer to Compiling section.
+ZMQGate is distributed as source code that you compile with the bundled
+waf wrapper. There are no official apt/yum packages, so install the
+dependencies listed below and then follow the Compiling section.
 
 We currently support only Linux.
 

@@ -5,6 +5,7 @@
 #include "zutils.h"
 #include "log.h"
 #include "main.h"
+#include <errno.h>
 
 int zmq_open(config_zmqsocket_t *sock, int kinds, int defkind,
     sock_callback callback, struct ev_loop *loop) {
@@ -125,11 +126,25 @@ void skip_message(void * sock) {
     size_t len = sizeof(opt);
     zmq_msg_t msg;
     SNIMPL(zmq_msg_init(&msg));
+
     while(opt) {
-        SNIMPL(zmq_msg_recv(&msg, sock, 0));
+        int rc = zmq_msg_recv(&msg, sock, ZMQ_DONTWAIT);
+        if(rc < 0) {
+            if(errno == EINTR) {
+                continue;
+            }
+            if(errno == EAGAIN) {
+                break;
+            }
+            LERR("Failed to skip message: %m");
+            break;
+        }
         LDEBUG("Skipped garbage: [%d] %.*s", zmq_msg_size(&msg),
             zmq_msg_size(&msg), zmq_msg_data(&msg));
-        SNIMPL(zmq_getsockopt(sock, ZMQ_RCVMORE, &opt, &len));
+        if(zmq_getsockopt(sock, ZMQ_RCVMORE, &opt, &len) < 0) {
+            LERR("Can't query more parts: %m");
+            break;
+        }
     }
     SNIMPL(zmq_msg_close(&msg));
     return;
