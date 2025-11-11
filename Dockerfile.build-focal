@@ -1,0 +1,35 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        pkg-config \
+        git \
+        python3 \
+        python3-distutils \
+        python3-yaml \
+        libzmq3-dev \
+        libyaml-dev \
+        libev-dev \
+        libssl-dev \
+        libsodium-dev \
+        libpgm-dev \
+        libnorm-dev \
+        libkrb5-dev \
+        libgssapi-krb5-2 \
+        libxml2-dev \
+        libicu-dev \
+        zlib1g-dev \
+        liblzma-dev \
+        libbsd-dev \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/zerogw
+
+COPY . .
+
+RUN ./waf configure --prefix=/usr && \
+    ./waf build
