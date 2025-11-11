@@ -77,8 +77,8 @@ class JsonList(Base):
         ws.client_got('["message: msg2"]')
         # frontend
         self.backend_send('publish', 'chat', '["message: msg3"]')
-        ws.client_send_only("ZEROGW:echo:text1")
+        ws.client_send_only("zmqgate:echo:text1")
         self.assertIn(ws.read_list(), (
-            [["message: msg3"], "ZEROGW:echo:text1"],
-            ["ZEROGW:echo:text1", ["message: msg3"]],
+            [["message: msg3"], "zmqgate:echo:text1"],
+            ["ZMQGATE:echo:text1", ["message: msg3"]],
             ))

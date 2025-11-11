@@ -10,21 +10,21 @@ import datetime
 import zmq
 
 builddir = os.environ.get("BUILDDIR", './build')
-START_TIMEOUT = float(os.environ.get("ZEROGW_START_TIMEOUT", 0.2))
+START_TIMEOUT = float(os.environ.get("ZMQGATE_START_TIMEOUT", 0.2))
 
-ZEROGW_BINARY=builddir + "/zerogw"
-CONFIG="./test/zerogw.yaml"
+ZMQGATE_BINARY=builddir + "/zmqgate"
+CONFIG="./test/zmqgate.yaml"
 
-ECHO_SOCKET = "ipc:///tmp/zerogw-test-echo"
-ECHO2_SOCKET = "ipc:///tmp/zerogw-test-echo2"
-ECHOIP_SOCKET = "ipc:///tmp/zerogw-test-echo_ip"
-CHAT_FW = "ipc:///tmp/zerogw-test-chatfw"
-CHAT_SOCK = "ipc:///tmp/zerogw-test-chat"
-MINIGAME = "ipc:///tmp/zerogw-test-minigame"
+ECHO_SOCKET = "ipc:///tmp/zmqgate-test-echo"
+ECHO2_SOCKET = "ipc:///tmp/zmqgate-test-echo2"
+ECHOIP_SOCKET = "ipc:///tmp/zmqgate-test-echo_ip"
+CHAT_FW = "ipc:///tmp/zmqgate-test-chatfw"
+CHAT_SOCK = "ipc:///tmp/zmqgate-test-chat"
+MINIGAME = "ipc:///tmp/zmqgate-test-minigame"
 
-HTTP_ADDR = "/tmp/zerogw-test"
-STATUS_ADDR = "ipc:///tmp/zerogw-test-status"
-CONTROL_ADDR = "ipc:///tmp/zerogw-test-control"
+HTTP_ADDR = "/tmp/zmqgate-test"
+STATUS_ADDR = "ipc:///tmp/zmqgate-test-status"
+CONTROL_ADDR = "ipc:///tmp/zmqgate-test-control"
 
 
 def stop_process(proc):
@@ -45,7 +45,7 @@ class Base(unittest.TestCase):
         time.sleep(START_TIMEOUT)
 
     def do_init(self):
-        self.proc = subprocess.Popen([ZEROGW_BINARY, '-c', self.config])
+        self.proc = subprocess.Popen([ZMQGATE_BINARY, '-c', self.config])
         self.addCleanup(stop_process, self.proc)
 
     def http(self, host='localhost'):
@@ -60,7 +60,7 @@ class Base(unittest.TestCase):
             else:
                 break
         else:
-            raise RuntimeError("Can't connect to zerogw")
+            raise RuntimeError("Can't connect to zmqgate")
         return conn
 
     def websock(self, **kw):
@@ -532,7 +532,7 @@ class Chat(Base):
         self.backend_send('disconnect', ws.intid)
         time.sleep(0.1)
         self.backend_send('publish', 'hello', 'world')
-        # sorry, zerogw lacks user-friendly errors on websock errors
+        # sorry, ZMQGATE lacks user-friendly errors on websock errors
         with self.assertRaisesRegex(http.BadStatusLine, "''"):
             ws.client_send('hello_world')
 
@@ -577,13 +577,13 @@ class Chat(Base):
         ws1.subscribe('chat')
         ws1.client_send('hello_world')
         self.control('pause_websockets')
-        ws1.client_got('ZEROGW:paused')
+        ws1.client_got('ZMQGATE:paused')
         time.sleep(0.1)
         ws1.client_send_only('test1')
         with self.assertRaises(TimeoutError):
             ws1.client_send_check('test1')
         self.control('resume_websockets')
-        ws1.client_got('ZEROGW:resumed')
+        ws1.client_got('ZMQGATE:resumed')
         ws1.client_send_check('test1')
         ws1.client_send('ok')
         ws1.close()
@@ -594,13 +594,13 @@ class Chat(Base):
         ws1.subscribe('chat')
         self.backend_send('add_output', ws1.intid, 'hello-', 'minigame')
         self.control('pause_websockets')
-        ws1.client_got('ZEROGW:paused')
+        ws1.client_got('ZMQGATE:paused')
         time.sleep(0.1)
         ws1.client_send_only('hello-test1')
         with self.assertRaises(TimeoutError):
             ws1.client_send_check('hello-test1', 'minigame')
         self.control('resume_websockets')
-        ws1.client_got('ZEROGW:resumed')
+        ws1.client_got('ZMQGATE:resumed')
         ws1.client_send_check('hello-test1', 'minigame')
         ws1.client_send('ok')
         ws1.close()

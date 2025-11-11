@@ -1,16 +1,16 @@
 # Maintainer: Paul Colomiets <pc@gafol.net>
 
-pkgname=zerogw
+pkgname=zmqgate
 pkgver=${VERSION}
 pkgrel=1
 pkgdesc="A http/zeromq gateway"
 arch=('i686' 'x86_64')
-url="http://github.com/tailhook/zerogw"
+url="http://github.com/tailhook/zmqgate"
 license=('MIT')
 depends=('zeromq' 'libyaml' 'openssl' 'libev' 'mime-types')
 makedepends=('coyaml' 'libwebsite>=0.2.20' 'python-pyzmq>=2.1.9' 'mime-types')
-backup=("etc/zerogw.yaml")
-source=(https://github.com/downloads/tailhook/zerogw/$pkgname-$pkgver.tar.bz2)
+backup=("etc/zmqgate.yaml")
+source=(https://github.com/downloads/tailhook/zmqgate/$pkgname-$pkgver.tar.bz2)
 md5sums=('${DIST_MD5}')
 
 build() {

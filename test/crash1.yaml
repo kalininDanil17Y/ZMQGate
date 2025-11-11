@@ -3,7 +3,7 @@ Server:
   zmq-io-threads: 1
   disk-io-threads: 1
   listen:
-    - unix-socket: /tmp/zerogw-test
+    - unix-socket: /tmp/zmqgate-test
   error-log:
     level: 1
     warning-timeout: 300

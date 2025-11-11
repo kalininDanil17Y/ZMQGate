@@ -15,13 +15,13 @@ trap killchildren 0 1 2 3 15
 # basically you just need more python code for that
 redis-server redis.conf &
 
-# we run two zerogw with different socket directories and different ports
+# we run two zmqgate with different socket directories and different ports
 mkdir -p ./run/z{1,2,3} 2> /dev/null
-zerogw -c zerogw.yaml -Dport=8001 -Ddir=./run/z1 &
-zerogw -c zerogw.yaml -Dport=8002 -Ddir=./run/z2 &
-zerogw -c zerogw.yaml -Dport=8003 -Ddir=./run/z3 &
+zmqgate -c zmqgate.yaml -Dport=8001 -Ddir=./run/z1 &
+zmqgate -c zmqgate.yaml -Dport=8002 -Ddir=./run/z2 &
+zmqgate -c zmqgate.yaml -Dport=8003 -Ddir=./run/z3 &
 
-# because of zeromq features, and because we are using bind sockets in zerogw
+# because of zeromq features, and because we are using bind sockets in zmqgate
 # side (which is most useful use case), we can run any number of backends
 # with equal configuration
 # BTW, storing data in redis also helps
@@ -46,7 +46,7 @@ echo "You can now browse one of the three urls:"
 echo "    http://localhost:8001/"
 echo "    http://localhost:8002/"
 echo "    http://localhost:8003/"
-echo "All of them should be same, but served with different zerogw"
+echo "All of them should be same, but served with different zmqgate"
 echo "(although it can take few seconds to start up redis and python)"
 echo "NOTE: we have put all the sockets, redis data and logs in ./run dir"
 echo "========================================================================"

@@ -414,8 +414,8 @@ static void send_later(struct ev_loop *loop, struct ev_idle *watch, int rev) {
                 root.stat.comet_sent_messages += 1;
                 char *data = zmq_msg_data(&msg->zmsg);
                 int datasize = zmq_msg_size(&msg->zmsg);
-                if(datasize > 7 /*strlen("ZEROGW:")*/
-                    && !strncmp(data, "ZEROGW:", 7)) {
+                if(datasize > 7 /*strlen("zmqgate:")*/
+                    && !strncmp(data, "zmqgate:", 7)) {
                     obstack_1grow(&req->pieces, '"');
                     // TODO(tailhook) escape value if needed
                     obstack_grow(&req->pieces, data, datasize);

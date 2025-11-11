@@ -4,7 +4,7 @@ from waflib import Utils, Options
 from waflib.Build import BuildContext
 from waflib.Scripting import Dist
 
-APPNAME='zerogw'
+APPNAME='zmqgate'
 VERSION='0.5.9'
 
 top = '.'
@@ -43,7 +43,7 @@ def build(bld):
             'src/pool.c',
             'src/msgqueue.c',
             ],
-        target       = 'zerogw',
+        target       = 'zmqgate',
         includes     = ['src', 'libev', 'libwebsite/include', 'libyaml/include', 'coyaml/include'],
         libpath      = ['libyaml', 'libwebsite'],
         defines      = [
@@ -54,9 +54,9 @@ def build(bld):
         )
 
     if bld.env['PREFIX'] == '/usr':
-        bld.install_files('/etc', ['examples/zerogw.yaml'])
+        bld.install_files('/etc', ['examples/zmqgate.yaml'])
     else:
-        bld.install_files('${PREFIX}/etc', ['examples/zerogw.yaml'])
+        bld.install_files('${PREFIX}/etc', ['examples/zmqgate.yaml'])
 
 def dist(ctx):
     ctx.excl = [

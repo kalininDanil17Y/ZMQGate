@@ -1,4 +1,4 @@
-# Zerogw's configuration library allows you to override variables
+# zmqgate's configuration library allows you to override variables
 # from a command line, so we create one, to be able to override port and socket
 # directory. See ./scale.sh for example of how to use it
 # (we use yaml anchors and $-style variables interchangeably with coyaml)
@@ -13,7 +13,7 @@ Server:
       port: $port
   control:
     socket:
-    - !zmq.Bind ipc://$dir/zerogw-ctl
+    - !zmq.Bind ipc://$dir/zmqgate-ctl
   error-log:
     level: 3
     warning-timeout: 300

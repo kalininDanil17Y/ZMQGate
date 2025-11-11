@@ -44,8 +44,6 @@ Dependencies
 ------------
 
  * linux with kernel at least 2.6.28 (need accept4)
- * libwebsite_ for handling http
- * coyaml_ for handling configuration
  * python3_ needed for coyaml to build configuration parser
  * libzmq_ and libev_ of course
  * libyaml_ for parsing configuration
@@ -71,9 +69,9 @@ To run the binaries you only need::
 Logging
 ~~~~~~~
 
-When running inside Docker it is convenient to stream Zerogw logs to
+When running inside Docker it is convenient to stream zmqgate logs to
 `stdout`.  Set ``Server.error-log.filename`` to ``"-"`` (the default in
-``examples/zerogw.yaml``) and messages will appear in ``docker logs``.
+``examples/zmqgate.yaml``) and messages will appear in ``docker logs``.
 
 .. _libwebsite: http://github.com/tailhook/libwebsite
 .. _coyaml: http://github.com/tailhook/coyaml

@@ -15,14 +15,14 @@ trap killchildren 0 1 2 3 15
 # basically you just need more python code for that
 redis-server redis.conf &
 
-# We provide each zerogw instance a separate directory for zeromq sockets
+# We provide each zmqgate instance a separate directory for zeromq sockets
 # because zeromq sockets are bound, but use special startup script for
 # running them on single port
 mkdir -p ./run/z{1,2,3} 2> /dev/null
-# passing three dirs means start three zerogw instances one per dir
-python single_port_zerogw.py ./run/z1 ./run/z2 ./run/z3 &
+# passing three dirs means start three zmqgate instances one per dir
+python single_port_zmqgate.py ./run/z1 ./run/z2 ./run/z3 &
 
-# because of zeromq features, and because we are using bind sockets in zerogw
+# because of zeromq features, and because we are using bind sockets in zmqgate
 # side (which is most useful use case), we can run any number of backends
 # with equal configuration
 # BTW, storing data in redis also helps
@@ -45,9 +45,9 @@ done
 echo "========================================================================"
 echo "You can now browse:"
 echo "    http://localhost:8000/"
-echo "Depending on your luck you will hit different zerogw instance each time"
+echo "Depending on your luck you will hit different zmqgate instance each time"
 echo "NOTE: Long polling (websocket fallback) doesn't work correctly"
-echo "WARNING: Danging zerogw processes may exist after stopping"
+echo "WARNING: Danging zmqgate processes may exist after stopping"
 echo "========================================================================"
 
 while ! wait; do true; done;

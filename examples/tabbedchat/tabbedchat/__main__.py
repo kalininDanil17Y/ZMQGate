@@ -8,22 +8,22 @@ def get_options():
     from argparse import ArgumentParser
     ap = ArgumentParser()
     ap.add_argument('--auth-connect', metavar="ZMQADDR",
-        help="Zerogw's main forwarding address (repeatable)",
+        help="zmqgate's main forwarding address (repeatable)",
         default=[], action="append")
     ap.add_argument('--auth-bind', metavar="ZMQADDR",
-        help="Zerogw's main forwarding address (repeatable)",
+        help="zmqgate's main forwarding address (repeatable)",
         default=[], action="append")
     ap.add_argument('--chat-connect', metavar="ZMQADDR",
-        help="Zerogw's chat route address (repeatable)",
+        help="zmqgate's chat route address (repeatable)",
         default=[], action="append")
     ap.add_argument('--chat-bind', metavar="ZMQADDR",
-        help="Zerogw's chat route address (repeatable)",
+        help="zmqgate's chat route address (repeatable)",
         default=[], action="append")
     ap.add_argument('--output-connect', metavar="ZMQADDR",
-        help="Zerogw's subsription address (repeatable)",
+        help="zmqgate's subsription address (repeatable)",
         default=[], action="append")
     ap.add_argument('--output-bind', metavar="ZMQADDR",
-        help="Zerogw's subsription address (repeatable)",
+        help="zmqgate's subsription address (repeatable)",
         default=[], action="append")
     ap.add_argument('--log-file', metavar="FILE",
         help="Log file name",

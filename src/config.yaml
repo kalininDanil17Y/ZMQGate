@@ -1,7 +1,7 @@
 
 __meta__:
-  program-name: zerogw
-  default-config: /etc/zerogw.yaml
+  program-name: zmqgate
+  default-config: /etc/zmqgate.yaml
   description: >
     A HTTP to zeromq gateway. It's actually a web server which uses zeromq for
     communication with backends.
@@ -87,7 +87,7 @@ __types__:
       =: 10000
       description: >
         Amount of time zeromq tries to send messages already put into
-        the buffers. Zerogw will probably stay alive at most this amount
+        the buffers. Zmqgate will probably stay alive at most this amount
         of time when got SIGTERM. Time is expressed in miliseconds
     _sock: !_VoidPtr ~
     _watch: !CStruct ev_io
@@ -187,7 +187,7 @@ __types__:
         =: '{host} - {user} [{date}] "{request}" {status} {bytes}'
         inheritance: yes
       filename: !File
-        =: /var/log/zerogw/access.log
+        =: /var/log/zmqgate/access.log
         check-exists: no
         check-dir: yes
         inheritance: yes
@@ -407,7 +407,7 @@ __types__:
         description: >
           Maximum file size for static file. Be carefull, it's currently fully
           loaded into memory before being sent. So set this value low and don't
-          use zerogw for serving big static files.
+          use zmqgate for serving big static files.
         inheritance: yes
       # _cache: !CType url_cache_t
 
@@ -545,7 +545,7 @@ __types__:
               default: no
               description: >
                 If this command is enabled, users will receive
-                ``ZEROGW:paused`` and ``ZEROGW:resumed`` commands when
+                ``ZMQGATE:paused`` and ``ZMQGATE:resumed`` commands when
                 control commands ``pause_websockets`` and ``resume_websockets``
                 are sent. This is useful to notify users that something
                 happens (server software updated) on the server.
@@ -590,7 +590,7 @@ __types__:
                 all three (subscribe, unsubscribe, publish) commands. Also some
                 of your users can confuse other users by sending bad-looking
                 messages. Also publishing messages with frontend commands is
-                not scalable to multiple boxes (zerogw instances).
+                not scalable to multiple boxes (zmqgate instances).
                 You have been warned.
             name: !String publish
             topic-name: !String
@@ -701,7 +701,7 @@ __types__:
         you know truth by some other means)
       command-line: [-w, --warning-timeout]
     filename: !File
-      default: "/var/log/zerogw/error.log"
+      default: "/var/log/zmqgate/error.log"
       check-existence: no
       check-dir: yes
       description: >
@@ -818,7 +818,7 @@ Estp:
     description: The host name to report to ESTP, the default is localhost, no
       hostname guessing is done
   application-name: !String
-    =: zerogw
+    =: zmqgate
     description: Name of the application for ESTP, leave as default if you have
       only one estp instance
   socket: !Struct zmqsocket

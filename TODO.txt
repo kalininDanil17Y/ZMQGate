@@ -22,7 +22,7 @@
  * Configuration reloading
  - HTTPS
  - Add server name-version header
- - Configuration of zeromq devices in zerogw config
+ - Configuration of zeromq devices in zmqgate config
  - Figure out how to implement SDCH
  - Replace ugly offsetof's to SHIFT macro
  - Add another kind of forwarding (pushing) requests for statistics

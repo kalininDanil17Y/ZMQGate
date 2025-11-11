@@ -3,7 +3,7 @@ Server:
   zmq-io-threads: 1
   disk-io-threads: 1
   listen:
-    - unix-socket: /tmp/zerogw-test
+    - unix-socket: /tmp/zmqgate-test
   error-log:
     level: 1
     warning-timeout: 300
@@ -16,6 +16,6 @@ Routing:
         websocket:
           enabled: yes
           forward:
-          - !zmq.Connect ipc:///tmp/test/zerogw-test-fw
+          - !zmq.Connect ipc:///tmp/test/zmqgate-test-fw
           subscribe:
-          - !zmq.Connect ipc:///tmp/test/zerogw-test-sub
+          - !zmq.Connect ipc:///tmp/test/zmqgate-test-sub

@@ -27,7 +27,7 @@ RUN apt-get update && \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/zerogw
+WORKDIR /opt/zmqgate
 
 COPY . .
 

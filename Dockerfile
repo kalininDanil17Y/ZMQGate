@@ -15,7 +15,7 @@ RUN apt-get update && \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/zerogw
+WORKDIR /opt/zmqgate
 
 COPY . .
 
@@ -35,13 +35,13 @@ RUN apt-get update && \
         mime-support && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /var/log && touch /var/log/zerogw.log
+RUN mkdir -p /var/log && touch /var/log/zmqgate.log
 
 COPY --from=builder /tmp/pkg/usr /usr
 
-COPY examples/zerogw.yaml /etc/zerogw/zerogw.yaml
+COPY examples/zmqgate.yaml /etc/zmqgate/zmqgate.yaml
 
 EXPOSE 6941
 
-ENTRYPOINT ["/usr/bin/zerogw"]
-CMD ["-c", "/etc/zerogw/zerogw.yaml"]
+ENTRYPOINT ["/usr/bin/zmqgate"]
+CMD ["-c", "/etc/zmqgate/zmqgate.yaml"]

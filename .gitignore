@@ -5,7 +5,7 @@
 *.pyc
 *.pyo
 __pycache__
-zerogw-*.tar.bz2
+zmqgate-*.tar.bz2
 *.deb
 *~
 *.swp

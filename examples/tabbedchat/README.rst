@@ -9,7 +9,7 @@ You can also try::
 
     ./scale.sh
 
-Which runs multiple processes of python and zerogw, to show how it could be
+Which runs multiple processes of python and zmqgate, to show how it could be
 scaled. But you need to turn sockets into tcp ones to scale it to multiple
 machines, and also fix redis config which is awfully slow for testing purposes.
 
@@ -17,11 +17,11 @@ There is also::
 
     ./single_socket.sh
 
-Which is merely same as ``scale.sh``, but running multiple zerogw instances
+Which is merely same as ``scale.sh``, but running multiple zmqgate instances
 on single port.
 
 
-You can also find this chat online at http://tabbedchat.zerogw.com
+You can also find this chat online at http://tabbedchat.zmqgate.com
 
 
 Hacking Remarks

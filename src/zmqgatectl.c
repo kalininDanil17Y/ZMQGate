@@ -7,25 +7,25 @@
 
 #include "config.h"
 
-typedef struct zerogwctl_flags_s {
+typedef struct zmqgatectl_flags_s {
     char *config;
     char *socket;
-} zerogwctl_flags_t;
+} zmqgatectl_flags_t;
 
 void print_usage(FILE *out) {
     fprintf(out, "Usage:\n");
-    fprintf(out, "    zerogwctl [options] command argument\n");
+    fprintf(out, "    zmqgatectl [options] command argument\n");
     fprintf(out, "\n");
     fprintf(out, "Description:\n");
-    fprintf(out, "    An utility to control zerogw behavior\n");
+    fprintf(out, "    An utility to control zmqgate behavior\n");
     fprintf(out, "\n");
     fprintf(out, "Options:\n");
     fprintf(out, "  -c,--config FILE  Configuration file name\n");
     fprintf(out, "  -s,--socket FILE  Overrides socket file name\n");
     fprintf(out, "\n");
     fprintf(out, "Commands:\n");
-    fprintf(out, "  list_commands     Query command list from zerogw\n");
-    fprintf(out, "  get_statictics    Gets zerogw statistics\n");
+    fprintf(out, "  list_commands     Query command list from zmqgate\n");
+    fprintf(out, "  get_statictics    Gets zmqgate statistics\n");
     fprintf(out, "  pause_websockets  Pauses forwarding messages from\n");
     fprintf(out, "                    websockets to backends (useful to\n");
     fprintf(out, "                    restart backend)\n");
@@ -37,7 +37,7 @@ void print_usage(FILE *out) {
     fprintf(out, "\n");
 }
 
-void parse_arguments(zerogwctl_flags_t *flags, int argc, char **argv) {
+void parse_arguments(zmqgatectl_flags_t *flags, int argc, char **argv) {
     int opt;
     while((opt = getopt(argc, argv, "hc:s:")) != -1) {
         switch(opt) {
@@ -59,16 +59,16 @@ void parse_arguments(zerogwctl_flags_t *flags, int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-    zerogwctl_flags_t flags = {NULL,NULL};
+    zmqgatectl_flags_t flags = {NULL,NULL};
     config_main_t config;
     char *sockaddr;
-    char *fakeargs[] = {"zerogwctl", NULL};
+    char *fakeargs[] = {"zmqgatectl", NULL};
     int rc;
 
     parse_arguments(&flags, argc, argv);
     coyaml_context_t *ctx = config_context(NULL, &config);
     if(!ctx) {
-        fprintf(stderr, "zerogwctl: failed to initialise configuration context\n");
+        fprintf(stderr, "zmqgatectl: failed to initialise configuration context\n");
         return 1;
     }
     if(flags.config) {
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     }
     if(coyaml_readfile(ctx) != 0) {
         fprintf(stderr,
-            "zerogwctl: cannot read configuration (check --config and permissions)\n");
+            "zmqgatectl: cannot read configuration (check --config and permissions)\n");
         coyaml_context_free(ctx);
         return 1;
     }
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
         zmq_msg_t msg;
         rc = zmq_msg_init_data(&msg, argv[i], strlen(argv[i]), NULL, NULL);
         if(rc != 0) {
-            fprintf(stderr, "zerogwctl: failed to send command part\n");
+            fprintf(stderr, "zmqgatectl: failed to send command part\n");
             zmq_msg_close(&msg);
             rc = 1;
             goto end;
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
         int flags = (i == argc - 1) ? 0 : ZMQ_SNDMORE;
         rc = zmq_msg_send(&msg, socket, flags);
         if(rc < 0) {
-            fprintf(stderr, "zerogwctl: failed to send command to zerogw: %s\n",
+            fprintf(stderr, "zmqgatectl: failed to send command to zmqgate: %s\n",
                 strerror(errno));
             zmq_msg_close(&msg);
             rc = 1;
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
         zmq_msg_init(&msg);
         rc = zmq_msg_recv(&msg, socket, 0);
         if(rc < 0) {
-            fprintf(stderr, "zerogwctl: receive failed: %s\n", strerror(errno));
+            fprintf(stderr, "zmqgatectl: receive failed: %s\n", strerror(errno));
             zmq_msg_close(&msg);
             rc = 1;
             goto end;
@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
         size_t more_size = sizeof(more);
         rc = zmq_getsockopt(socket, ZMQ_RCVMORE, &more, &more_size);
         if(rc != 0) {
-            fprintf(stderr, "zerogwctl: failed to read reply flag: %s\n",
+            fprintf(stderr, "zmqgatectl: failed to read reply flag: %s\n",
                 strerror(errno));
             zmq_msg_close(&msg);
             rc = 1;

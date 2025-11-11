@@ -86,7 +86,7 @@ class Loop(object):
             socks = self._poller.poll()
             for s, _ in socks:
                 msg = s.recv_multipart()
-                log.debug("Received from zerogw: %r", msg)
+                log.debug("Received from zmqgate: %r", msg)
                 self._handlers[s](msg)
 
 
@@ -123,7 +123,7 @@ class Output(object):
         self._do_send((b'disconnect', cid(conn)))
 
     def _do_send(self, data):
-        log.debug("Sending to zerogw: %r", data)
+        log.debug("Sending to zmqgate: %r", data)
         # TODO(tailhook) handle errors
         self._sock.send_multipart(data)
 

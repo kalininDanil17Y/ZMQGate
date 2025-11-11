@@ -1,6 +1,6 @@
-#compdef zerogwctl
+#compdef zmqgatectl
 
-_zerogwctl() {
+_zmqgatectl() {
     local commands
     commands=(
         list_commands
@@ -16,4 +16,4 @@ _zerogwctl() {
         '(-c -s --socket --config)'{-s+,--socket+}'[socket file]:socket file:_files'
 }
 
-_zerogwctl "$@"
+_zmqgatectl "$@"

@@ -3,10 +3,10 @@ Server:
   zmq-io-threads: 1
   disk-io-threads: 1
   listen:
-    - unix-socket: /tmp/zerogw-test
+    - unix-socket: /tmp/zmqgate-test
   control:
     socket:
-    - !zmq.Bind ipc:///tmp/zerogw-test-control
+    - !zmq.Bind ipc:///tmp/zmqgate-test-control
   error-log:
     level: 1
     warning-timeout: 300
@@ -19,7 +19,7 @@ Routing:
         zmq-forward:
           enabled: yes
           socket:
-          - !zmq.Bind "ipc:///tmp/zerogw-test-echo"
+          - !zmq.Bind "ipc:///tmp/zmqgate-test-echo"
           contents:
           - !Uri ~
           - !Body ~
@@ -33,7 +33,7 @@ Routing:
         zmq-forward:
           enabled: yes
           socket:
-          - !zmq.Bind "ipc:///tmp/zerogw-test-echo2"
+          - !zmq.Bind "ipc:///tmp/zmqgate-test-echo2"
           contents:
           - !Method ~
           - !Uri ~
@@ -41,13 +41,13 @@ Routing:
         websocket:
           enabled: yes
           forward: !zmq.Push
-          - !zmq.Bind "ipc:///tmp/zerogw-test-chatfw"
+          - !zmq.Bind "ipc:///tmp/zmqgate-test-chatfw"
           subscribe: !zmq.Sub
-          - !zmq.Bind "ipc:///tmp/zerogw-test-chat"
+          - !zmq.Bind "ipc:///tmp/zmqgate-test-chat"
           named-outputs:
             minigame:
               =:
-              - !zmq.Bind "ipc:///tmp/zerogw-test-minigame"
+              - !zmq.Bind "ipc:///tmp/zmqgate-test-minigame"
               sync-interval: 100
           polling-fallback:
             timestamps: yes
@@ -61,9 +61,9 @@ Routing:
         websocket:
           enabled: yes
           forward: !zmq.Push
-          - !zmq.Bind "ipc:///tmp/zerogw-test-chatfw1"
+          - !zmq.Bind "ipc:///tmp/zmqgate-test-chatfw1"
           subscribe: !zmq.Sub
-          - !zmq.Bind "ipc:///tmp/zerogw-test-chat1"
+          - !zmq.Bind "ipc:///tmp/zmqgate-test-chat1"
           polling-fallback:
             timestamps: yes
           frontend-commands:

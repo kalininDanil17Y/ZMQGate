@@ -319,8 +319,8 @@ static void websock_message_free(void *ws) {
 
 config_zmqsocket_t *websock_resolve(hybi_t *hybi, char *data, int length) {
     if(hybi->route->websocket.frontend_commands.enabled
-        && length >= 8 /*strlen("ZEROGW:")+1*/
-        && !memcmp(data, "ZEROGW:", 7)) {
+        && length >= 8 /*strlen("zmqgate:")+1*/
+        && !memcmp(data, "zmqgate:", 7)) {
         if(length >= 11 && !memcmp(data+7, "echo", 4)) {
             message_t *mm = (message_t*)malloc(sizeof(message_t));
             ANIMPL(mm);
@@ -970,14 +970,14 @@ int pause_websockets(bool pause) {
     SNIMPL(ws_message_init(&mm->ws));
 
     if(pause) {
-        zmq_msg_init_size(&mm->zmq, 13 /*strlen("ZEROGW:paused")*/);
+        zmq_msg_init_size(&mm->zmq, 13 /*strlen("ZMQGATE:paused")*/);
         char *zdata = zmq_msg_data(&mm->zmq);
-        memcpy(zdata, "ZEROGW:paused", 13);
+        memcpy(zdata, "ZMQGATE:paused", 13);
         ws_MESSAGE_DATA(&mm->ws, zdata, 13, NULL);
     } else {
-        zmq_msg_init_size(&mm->zmq, 14 /*strlen("ZEROGW:resumed")*/);
+        zmq_msg_init_size(&mm->zmq, 14 /*strlen("ZMQGATE:resumed")*/);
         char *zdata = zmq_msg_data(&mm->zmq);
-        memcpy(zdata, "ZEROGW:resumed", 14);
+        memcpy(zdata, "ZMQGATE:resumed", 14);
         ws_MESSAGE_DATA(&mm->ws, zdata, 14, NULL);
     }
 

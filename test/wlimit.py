@@ -5,7 +5,7 @@ from http import client as http
 from .simple import Base, TimeoutError
 
 CONFIG='test/wlimit.yaml'
-CHAT_FW = "ipc:///tmp/zerogw-test-chatfw"
+CHAT_FW = "ipc:///tmp/zmqgate-test-chatfw"
 
 class Wlimit(Base):
     timeout = 2  # in zmq.select units (seconds)

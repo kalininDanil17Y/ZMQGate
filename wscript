@@ -6,7 +6,7 @@ from waflib.Scripting import Dist
 import subprocess
 import os.path
 
-APPNAME='zerogw'
+APPNAME='zmqgate'
 if os.path.exists('.git'):
     VERSION=subprocess.getoutput('git describe').lstrip('v').replace('-', '_')
 else:
@@ -57,7 +57,7 @@ def build(bld):
             'src/pool.c',
             'src/msgqueue.c',
             ],
-        target       = 'zerogw',
+        target       = 'zmqgate',
         includes     = ['src', 'coyaml/include', 'libwebsite/include'],
         libpath      = [
             bld.bldnode.abspath() + '/coyaml',
@@ -81,9 +81,9 @@ def build(bld):
         features     = ['c', 'cprogram', 'coyaml'],
         source       = [
             'src/config.yaml',
-            'src/zerogwctl.c',
+            'src/zmqgatectl.c',
             ],
-        target       = 'zerogwctl',
+        target       = 'zmqgatectl',
         includes     = ['src', 'coyaml/include', 'libwebsite/include'],
         libpath      = [
             bld.bldnode.abspath() + '/coyaml',
@@ -99,14 +99,14 @@ def build(bld):
         )
 
     if bld.env['PREFIX'] == '/usr':
-        bld.install_files('/etc', ['examples/zerogw.yaml'])
-        bld.install_as('/etc/bash_completion.d/zerogwctl',
+        bld.install_files('/etc', ['examples/zmqgate.yaml'])
+        bld.install_as('/etc/bash_completion.d/zmqgatectl',
             'completion/bash')
     else:
-        bld.install_files('${PREFIX}/etc', ['examples/zerogw.yaml'])
-        bld.install_as('${PREFIX}/etc/bash_completion.d/zerogwctl',
+        bld.install_files('${PREFIX}/etc', ['examples/zmqgate.yaml'])
+        bld.install_as('${PREFIX}/etc/bash_completion.d/zmqgatectl',
             'completion/bash')
-    bld.install_as('${PREFIX}/share/zsh/site-functions/_zerogwctl',
+    bld.install_as('${PREFIX}/share/zsh/site-functions/_zmqgatectl',
         'completion/zsh')
 
 
@@ -158,7 +158,7 @@ def build_tests(bld):
     bld(rule='cd ${SRC[0].parent.parent.abspath()};'
         'export BUILDDIR=${SRC[1].parent.abspath()};'
         'python -m unittest discover -s test -p "*.py" -t . -v',
-        source=['test/simple.py', 'zerogw'],
+        source=['test/simple.py', 'zmqgate'],
         always=True)
 
 

@@ -14,7 +14,7 @@ trap killchildren 0 1 2 3 15
 
 mkdir ./run 2> /dev/null
 
-zerogw -c zerogw.yaml &
+zmqgate -c zmqgate.yaml &
 python3 -m tabbedchat \
     --auth-connect "ipc://./run/auth.sock" \
     --chat-connect "ipc://./run/chat.sock" \
