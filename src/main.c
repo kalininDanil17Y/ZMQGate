@@ -3,6 +3,7 @@
 #include <ev.h>
 #include <website.h>
 #include <strings.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <netinet/in.h>
@@ -21,6 +22,20 @@
 #include "commands.h"
 
 serverroot_t root;
+
+static const char *find_config_path(int argc, char **argv) {
+    const char *default_path = "/etc/zmqgate.yaml";
+    for(int i = 1; i < argc; i++) {
+        if(!strcmp(argv[i], "-c") || !strcmp(argv[i], "--config")) {
+            if(i + 1 < argc) {
+                return argv[i + 1];
+            }
+        } else if(!strncmp(argv[i], "--config=", 9)) {
+            return argv[i] + 9;
+        }
+    }
+    return default_path;
+}
 
 void init_statistics() {
     // quick and dirty
@@ -307,9 +322,12 @@ static void sighup_cb (int signal)
 
 int main(int argc, char **argv) {
     config_main_t config;
+    const char *config_path = find_config_path(argc, argv);
     config_load(&config, argc, argv);
     logconfig = (config_logging_t *)&config.Server.error_log;
     openlogs();
+    LNOTICE("Starting zmqgate (config: %s, zmq-io-threads: %d, disk-io-threads: %d)",
+        config_path, config.Server.zmq_io_threads, config.Server.disk_io_threads);
 
     signal(SIGHUP, sighup_cb);
     signal(SIGPIPE, SIG_IGN);
@@ -322,26 +340,28 @@ int main(int argc, char **argv) {
     root.config = &config;
     CONFIG_LISTENADDR_LOOP(slisten, config.Server.listen) {
         if(slisten->value.fd >= 0) {
-            LDEBUG("Using socket %d", slisten->value.fd);
+            LNOTICE("Listening on fd %d", slisten->value.fd);
             SNIMPL(ws_add_fd(&root.ws, slisten->value.fd));
         } else if(slisten->value.unix_socket && *slisten->value.unix_socket) {
-            LDEBUG("Using unix socket \"%.*s\"",
-                slisten->value.unix_socket_len,
-                slisten->value.unix_socket);
             int rc = ws_add_unix(&root.ws, slisten->value.unix_socket,
                 slisten->value.unix_socket_len);
             if(rc < 0) {
                 LALERT("Can't listen unix socket ``%.*s'': %m",
                     slisten->value.unix_socket_len,
                     slisten->value.unix_socket);
+            } else {
+                LNOTICE("Listening on unix socket \"%.*s\"",
+                    slisten->value.unix_socket_len,
+                    slisten->value.unix_socket);
             }
         } else {
-            LDEBUG("Using host %s port %d",
-                slisten->value.host, slisten->value.port);
             int rc = ws_add_tcp(&root.ws, inet_addr(slisten->value.host),
                 slisten->value.port);
             if(rc < 0) {
                 LALERT("Can't listen tcp %s:%d: %m",
+                    slisten->value.host, slisten->value.port);
+            } else {
+                LNOTICE("Listening on tcp %s:%d",
                     slisten->value.host, slisten->value.port);
             }
         }
