@@ -598,12 +598,9 @@ void websock_process(struct ev_loop *loop, struct ev_io *watch, int revents) {
             Z_RECV_NEXT(msg);
             hybi_t *hybi = hybi_find(zmq_msg_data(&msg));
             if(!hybi || hybi->route != route) {
-                if(route->websocket.ignore_missing_connections) {
-                    Z_RECV_LAST(msg);
-                    TWARN("Ignoring send to unknown connection id");
-                    goto msg_finish;
-                }
-                goto msg_error;
+                Z_RECV_LAST(msg);
+                TWARN("Ignoring send to unknown connection id");
+                goto msg_finish;
             }
             Z_RECV_LAST(msg);
             message_t *mm = (message_t*)malloc(sizeof(message_t));

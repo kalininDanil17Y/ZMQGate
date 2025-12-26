@@ -533,11 +533,6 @@ __types__:
           This limit works only for Push sockets with either high water mark set
           or having no connections at the moment. Also it works when server was
           paused by user.
-      ignore-missing-connections: !Bool
-        default: no
-        description: >
-          Ignore backend `send` commands that target unknown connection ids and
-          log a warning instead of treating them as protocol errors.
       frontend-commands:
         enabled: !Bool no
         commands:
